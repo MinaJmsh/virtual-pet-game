@@ -1,0 +1,53 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { colors, outlineWidth, radii, spacing } from '@/theme/tokens';
+import { CozyText } from './CozyText';
+import { IconSource, Illustration } from './Illustration';
+import { PressableScale } from './PressableScale';
+
+interface Props {
+  icon: IconSource;
+  name: string;
+  caption?: string; // e.g. price
+  statusLabel?: string; // e.g. "In Use" (replaces the name)
+  selected?: boolean;
+  onPress: () => void;
+}
+
+export function GridCell({ icon, name, caption, statusLabel, selected, onPress }: Props) {
+  return (
+    <PressableScale
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={name}
+      accessibilityState={{ selected: !!selected }}
+      style={[styles.cell, selected && styles.selected]}
+      pressedStyle={styles.pressed}
+    >
+      <View style={styles.art}>
+        <Illustration icon={icon} size={52} />
+      </View>
+      <CozyText variant="label" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.9} style={styles.name}>
+        {statusLabel ?? name}
+      </CozyText>
+      {caption ? <CozyText variant="caption" color="textSecondary">{caption}</CozyText> : null}
+    </PressableScale>
+  );
+}
+
+const styles = StyleSheet.create({
+  cell: {
+    flex: 1,
+    aspectRatio: 1,
+    borderRadius: radii.cell,
+    backgroundColor: colors.cardFill,
+    borderWidth: outlineWidth.regular,
+    borderColor: 'transparent',
+    padding: spacing.sm,
+    alignItems: 'center',
+  },
+  selected: { backgroundColor: colors.creamWhite, borderColor: colors.outline },
+  pressed: { backgroundColor: colors.cardFillPressed },
+  art: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  name: { textAlign: 'center' },
+});
