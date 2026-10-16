@@ -4,6 +4,7 @@ import { colors, outlineWidth, radii, spacing } from '@/theme/tokens';
 import { IconSource, Illustration } from './Illustration';
 import { NotificationDot } from './NotificationDot';
 import { PressableScale } from './PressableScale';
+import { SketchBorder, SketchLine } from './SketchBorder';
 
 export interface FolderTab {
   key: string;
@@ -24,7 +25,7 @@ const LINE = outlineWidth.regular;
 export function FolderTabRow({ tabs, activeKey, onChange }: Props) {
   return (
     <View style={styles.row}>
-      <View style={styles.line} />
+      <SketchLine style={styles.line} />
       {tabs.map((tab, i) => {
         const active = tab.key === activeKey;
         return (
@@ -37,6 +38,7 @@ export function FolderTabRow({ tabs, activeKey, onChange }: Props) {
             style={[styles.tab, active ? styles.active : styles.inactive, i > 0 && { marginLeft: -LINE }]}
           >
             <Illustration icon={tab.icon} size={26} />
+            <SketchBorder radius={radii.tab} sides="tab" />
             {tab.badge ? <NotificationDot /> : null}
           </PressableScale>
         );
@@ -47,16 +49,13 @@ export function FolderTabRow({ tabs, activeKey, onChange }: Props) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-end', height: TAB_H + 8 + LINE, paddingLeft: spacing.md, backgroundColor: colors.bgApp },
-  line: { position: 'absolute', left: 0, right: 0, bottom: 0, height: LINE, backgroundColor: colors.outline },
+  line: { position: 'absolute', left: 0, right: 0, bottom: -3 },
   tab: {
     width: 66,
     alignItems: 'center',
     justifyContent: 'center',
     borderTopLeftRadius: radii.tab,
     borderTopRightRadius: radii.tab,
-    borderWidth: LINE,
-    borderColor: colors.outline,
-    borderBottomWidth: 0,
   },
   inactive: { height: TAB_H, marginBottom: LINE, backgroundColor: colors.coral, zIndex: 1 },
   active: { height: TAB_H + 8 + LINE, backgroundColor: colors.bgApp, zIndex: 2 },

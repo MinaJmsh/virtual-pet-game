@@ -4,7 +4,8 @@ import { ActionButton } from '@/components/cozy/ActionButton';
 import { CozyText } from '@/components/cozy/CozyText';
 import { Illustration } from '@/components/cozy/Illustration';
 import { ShopItem } from '@/data/items';
-import { colors, outlineWidth, spacing } from '@/theme/tokens';
+import { SketchLine } from '@/components/cozy/SketchBorder';
+import { colors, spacing } from '@/theme/tokens';
 
 interface Props {
   item: ShopItem | null;
@@ -19,6 +20,7 @@ interface Props {
 export function ShopActionBar({ item, owned, equipped, canAfford, onBuy, onToggleEquip }: Props) {
   return (
     <View style={styles.bar}>
+      <SketchLine style={styles.topLine} />
       {item ? (
         <>
           <Illustration icon={item.icon} size={40} />
@@ -49,8 +51,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.md,
     backgroundColor: colors.bgApp,
-    borderTopWidth: outlineWidth.regular,
-    borderTopColor: colors.outline,
   },
+  topLine: { position: 'absolute', left: 0, right: 0, top: -4 },
   info: { flex: 1 },
 });

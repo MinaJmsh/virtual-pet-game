@@ -4,6 +4,7 @@ import { colors, outlineWidth, radii } from '@/theme/tokens';
 import { CozyText } from './CozyText';
 import { IconSource, Illustration } from './Illustration';
 import { PressableScale } from './PressableScale';
+import { SketchBorder } from './SketchBorder';
 
 interface Props {
   icon: IconSource;
@@ -28,6 +29,7 @@ export function ActionButton({ icon, label, onPress, disabled }: Props) {
         <Illustration icon={icon} size={28} />
       </View>
       <CozyText variant="caption" color={disabled ? 'disabledText' : 'textPrimary'}>{label}</CozyText>
+      <SketchBorder radius={radii.button} color={disabled ? colors.outlineSoft : colors.outline} />
     </PressableScale>
   );
 }
@@ -39,11 +41,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: radii.button,
     backgroundColor: colors.coral,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pressed: { backgroundColor: colors.coralPressed },
-  disabled: { backgroundColor: colors.disabledFill, borderColor: colors.outlineSoft },
+  disabled: { backgroundColor: colors.disabledFill },
 });

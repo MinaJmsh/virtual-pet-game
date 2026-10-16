@@ -4,6 +4,7 @@ import { CozyText } from '@/components/cozy/CozyText';
 import { Draggable } from '@/components/cozy/Draggable';
 import { Illustration } from '@/components/cozy/Illustration';
 import { ShelfBar } from '@/components/cozy/ShelfBar';
+import { SketchBorder } from '@/components/cozy/SketchBorder';
 import { RECIPES } from '@/data/recipes';
 import { colors, outlineWidth, spacing } from '@/theme/tokens';
 
@@ -31,6 +32,7 @@ export function MealShelf({ meals, onDragStart, onDrop }: Props) {
                   {n > 1 ? (
                     <View style={styles.badge}>
                       <CozyText variant="caption">x{n}</CozyText>
+                      <SketchBorder radius={999} />
                     </View>
                   ) : null}
                 </View>
@@ -53,7 +55,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderRadius: 999,
     backgroundColor: colors.creamWhite,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
   },
 });

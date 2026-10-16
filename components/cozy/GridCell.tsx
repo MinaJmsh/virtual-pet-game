@@ -4,6 +4,7 @@ import { colors, outlineWidth, radii, spacing } from '@/theme/tokens';
 import { CozyText } from './CozyText';
 import { IconSource, Illustration } from './Illustration';
 import { PressableScale } from './PressableScale';
+import { SketchBorder } from './SketchBorder';
 
 interface Props {
   icon: IconSource;
@@ -31,6 +32,7 @@ export function GridCell({ icon, name, caption, statusLabel, selected, onPress }
         {statusLabel ?? name}
       </CozyText>
       {caption ? <CozyText variant="caption" color="textSecondary">{caption}</CozyText> : null}
+      {selected ? <SketchBorder radius={radii.cell} /> : null}
     </PressableScale>
   );
 }
@@ -41,12 +43,10 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: radii.cell,
     backgroundColor: colors.cardFill,
-    borderWidth: outlineWidth.regular,
-    borderColor: 'transparent',
     padding: spacing.sm,
     alignItems: 'center',
   },
-  selected: { backgroundColor: colors.creamWhite, borderColor: colors.outline },
+  selected: { backgroundColor: colors.creamWhite },
   pressed: { backgroundColor: colors.cardFillPressed },
   art: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   name: { textAlign: 'center' },

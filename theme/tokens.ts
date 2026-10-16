@@ -49,3 +49,7 @@ export const typography = {
 } as const;
 
 export type TypographyVariant = keyof typeof typography;
+
+// Crayon outline look: straight lines with a rough, grainy brush edge.
+// width = line thickness (dp), rough = how ragged the edge is (dp), grain = opacity of the paper-streaks.
+export const sketch = { width: 2.2, rough: 0.7, grain: 0.3 } as const;

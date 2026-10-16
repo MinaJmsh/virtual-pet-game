@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
-import { colors, outlineWidth, radii, spacing } from '@/theme/tokens';
+import { colors, radii, spacing } from '@/theme/tokens';
+import { SketchBorder } from './SketchBorder';
 
 /** Dimmed backdrop + centered outlined card (the popup style from the spec). Place inside a full-screen parent. */
 export function PopupCard({ children }: { children: ReactNode }) {
@@ -9,6 +10,7 @@ export function PopupCard({ children }: { children: ReactNode }) {
     <Animated.View entering={FadeIn.duration(200)} style={styles.backdrop}>
       <Animated.View entering={ZoomIn.duration(220)} style={styles.card}>
         {children}
+        <SketchBorder radius={radii.cell} />
       </Animated.View>
     </Animated.View>
   );
@@ -24,7 +26,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: radii.cell,
     backgroundColor: colors.bgApp,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
   },
 });

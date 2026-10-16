@@ -1,10 +1,10 @@
 import React from 'react';
-import Svg, { Path } from 'react-native-svg';
-import { colors, outlineWidth } from '@/theme/tokens';
+import { SketchPolygon } from './SketchBorder';
 import { PressableScale } from './PressableScale';
+import { colors } from '@/theme/tokens';
 
-// Rounded triangle pointing left; mirrored for "right".
-const LEFT_TRIANGLE = 'M21 4 L6 14.5 Q3 17 6 19.5 L21 30 Q25 32.5 25 28 L25 6 Q25 1.5 21 4 Z';
+// Rounded-ish triangle pointing left (hand-drawn); mirrored for "right".
+const LEFT_TRIANGLE: [number, number][] = [[22, 5], [5, 17], [22, 29]];
 
 export function ArrowButton({ direction, onPress }: { direction: 'left' | 'right'; onPress: () => void }) {
   return (
@@ -15,9 +15,7 @@ export function ArrowButton({ direction, onPress }: { direction: 'left' | 'right
       accessibilityLabel={direction === 'left' ? 'Previous' : 'Next'}
       style={{ transform: [{ scaleX: direction === 'left' ? 1 : -1 }] }}
     >
-      <Svg width={28} height={34} viewBox="0 0 28 34">
-        <Path d={LEFT_TRIANGLE} fill={colors.creamWhite} stroke={colors.outline} strokeWidth={outlineWidth.regular} strokeLinejoin="round" />
-      </Svg>
+      <SketchPolygon width={28} height={34} poly={LEFT_TRIANGLE} fill={colors.creamWhite} />
     </PressableScale>
   );
 }

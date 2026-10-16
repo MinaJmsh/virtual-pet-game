@@ -3,7 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { CozyText } from '@/components/cozy/CozyText';
 import { Illustration } from '@/components/cozy/Illustration';
 import { Needs, NeedKey } from '@/game/types';
-import { colors, outlineWidth, spacing } from '@/theme/tokens';
+import { SketchBorder } from '@/components/cozy/SketchBorder';
+import { colors, spacing } from '@/theme/tokens';
 
 const META: { key: NeedKey; icon: string; label: string }[] = [
   { key: 'hunger', icon: '🍖', label: 'Hunger' },
@@ -17,8 +18,11 @@ function NeedMeter({ icon, label, value }: { icon: string; label: string; value:
   return (
     <View style={styles.meter} accessible accessibilityLabel={`${label} ${Math.round(value)} percent`}>
       <Illustration icon={icon} size={22} />
-      <View style={styles.track}>
-        <View style={[styles.fill, { width: `${value}%`, backgroundColor: low ? colors.accentRed : colors.coral }]} />
+      <View style={styles.trackWrap}>
+        <View style={styles.track}>
+          <View style={[styles.fill, { width: `${value}%`, backgroundColor: low ? colors.accentRed : colors.coral }]} />
+        </View>
+        <SketchBorder radius={6} />
       </View>
     </View>
   );
@@ -37,13 +41,11 @@ export function NeedsPanel({ needs }: { needs: Needs }) {
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.lg, rowGap: spacing.sm },
   meter: { width: '47%', flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  trackWrap: { flex: 1, height: 12 },
   track: {
     flex: 1,
-    height: 12,
     borderRadius: 6,
     backgroundColor: colors.creamWhite,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
     overflow: 'hidden',
   },
   fill: { height: '100%' },

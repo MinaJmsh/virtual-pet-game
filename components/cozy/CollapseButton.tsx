@@ -3,11 +3,13 @@ import { StyleSheet } from 'react-native';
 import { colors, outlineWidth, radii } from '@/theme/tokens';
 import { CozyText } from './CozyText';
 import { PressableScale } from './PressableScale';
+import { SketchBorder } from './SketchBorder';
 
 export function CollapseButton({ collapsed, onPress }: { collapsed: boolean; onPress: () => void }) {
   return (
     <PressableScale onPress={onPress} accessibilityRole="button" accessibilityLabel={collapsed ? 'Show panel' : 'Hide panel'} style={styles.button}>
       <CozyText variant="title" color="accentRed" style={styles.chevron}>{collapsed ? '⌃' : '⌄'}</CozyText>
+      <SketchBorder radius={radii.small} />
     </PressableScale>
   );
 }
@@ -18,8 +20,6 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: radii.small,
     backgroundColor: colors.creamWhite,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
     alignItems: 'center',
     justifyContent: 'center',
   },

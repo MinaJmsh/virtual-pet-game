@@ -4,6 +4,7 @@ import { colors, outlineWidth, radii, spacing } from '@/theme/tokens';
 import { CozyText } from './CozyText';
 import { IconSource, Illustration } from './Illustration';
 import { PressableScale } from './PressableScale';
+import { SketchBorder } from './SketchBorder';
 
 interface Props {
   icon: IconSource;
@@ -16,6 +17,7 @@ export function CurrencyPill({ icon, value, onPress }: Props) {
     <PressableScale onPress={onPress} disabled={!onPress} style={styles.wrap}>
       <View style={styles.pill}>
         <CozyText variant="numberLarge">{value}</CozyText>
+        <SketchBorder radius={radii.pill} />
       </View>
       <View style={styles.icon}>
         <Illustration icon={icon} size={34} />
@@ -34,8 +36,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: radii.pill,
     backgroundColor: colors.creamWhite,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
   },
   icon: { position: 'absolute', left: -8, top: -9, transform: [{ rotate: '-8deg' }] },
 });

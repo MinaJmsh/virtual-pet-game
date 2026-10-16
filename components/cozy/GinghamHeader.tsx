@@ -1,7 +1,8 @@
 import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, outlineWidth, sizes, spacing } from '@/theme/tokens';
+import { colors, sizes, spacing } from '@/theme/tokens';
+import { SketchLine } from './SketchBorder';
 
 const CELL = 40;
 
@@ -26,6 +27,7 @@ export function GinghamHeader({ children }: { children?: ReactNode }) {
         <View key={s.key} style={[styles.square, { left: s.left, top: s.top }]} />
       ))}
       <View style={[styles.content, { paddingTop: insets.top }]}>{children}</View>
+      <SketchLine style={styles.line} />
     </View>
   );
 }
@@ -33,10 +35,9 @@ export function GinghamHeader({ children }: { children?: ReactNode }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.ginghamA,
-    borderBottomWidth: outlineWidth.regular,
-    borderBottomColor: colors.outline,
     overflow: 'hidden',
   },
+  line: { position: 'absolute', left: 0, right: 0, bottom: -3 },
   square: { position: 'absolute', width: CELL, height: CELL, backgroundColor: colors.ginghamB },
   content: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, gap: spacing.md },
 });

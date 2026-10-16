@@ -4,12 +4,14 @@ import { useRouter } from 'expo-router';
 import { colors, outlineWidth, radii } from '@/theme/tokens';
 import { CozyText } from './CozyText';
 import { PressableScale } from './PressableScale';
+import { SketchBorder } from './SketchBorder';
 
 export function BackButton({ onPress }: { onPress?: () => void }) {
   const router = useRouter();
   return (
     <PressableScale onPress={onPress ?? (() => router.back())} style={styles.button} accessibilityLabel="Back" accessibilityRole="button">
       <CozyText variant="title" color="accentRed" style={styles.chevron}>‹</CozyText>
+      <SketchBorder radius={radii.small} />
     </PressableScale>
   );
 }
@@ -20,8 +22,6 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: radii.small,
     backgroundColor: colors.creamWhite,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
     alignItems: 'center',
     justifyContent: 'center',
   },

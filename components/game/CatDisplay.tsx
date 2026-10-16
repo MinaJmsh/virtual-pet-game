@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { PressableScale } from '@/components/cozy/PressableScale';
+import { SketchBorder } from '@/components/cozy/SketchBorder';
 import { getItem } from '@/data/items';
 import { getCatFace } from '@/game/mood';
 import { GameState } from '@/game/types';
-import { colors, outlineWidth } from '@/theme/tokens';
+import { colors } from '@/theme/tokens';
 
 /** Placeholder cat: emoji face on a coral rug. Swap the <Text> for your Krita sprite later. */
 export function CatDisplay({ state, onPress }: { state: GameState; onPress: () => void }) {
@@ -23,7 +24,7 @@ export function CatDisplay({ state, onPress }: { state: GameState; onPress: () =
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.rug} />
+      <View style={styles.rug}><SketchBorder radius={27} /></View>
       <PressableScale onPress={onPress} scaleTo={0.97} accessibilityRole="button" accessibilityLabel={`Pet ${state.cat.name}`}>
         <Animated.View style={[styles.cat, bobStyle]}>
           <Text style={styles.face}>{getCatFace(state.cat)}</Text>
@@ -44,8 +45,6 @@ const styles = StyleSheet.create({
     height: 54,
     borderRadius: 100,
     backgroundColor: colors.coral,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
   },
   cat: { alignItems: 'center', marginBottom: 18 },
   face: { fontSize: 112, lineHeight: 130 },

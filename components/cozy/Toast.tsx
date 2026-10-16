@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeOut } from 'react-native-reanimated';
-import { colors, outlineWidth, radii, spacing } from '@/theme/tokens';
+import { colors, radii, spacing } from '@/theme/tokens';
+import { SketchBorder } from './SketchBorder';
 import { CozyText } from './CozyText';
 
 /** Small floating message. Place inside a relatively-positioned parent. */
@@ -11,6 +12,7 @@ export function Toast({ message, top = spacing.md }: { message: string | null; t
       {message ? (
         <Animated.View entering={FadeInDown.duration(200)} exiting={FadeOut.duration(200)} style={styles.toast}>
           <CozyText variant="label">{message}</CozyText>
+          <SketchBorder radius={radii.pill} />
         </Animated.View>
       ) : null}
     </View>
@@ -24,7 +26,5 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radii.pill,
     backgroundColor: colors.creamWhite,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
   },
 });

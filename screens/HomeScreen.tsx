@@ -1,15 +1,18 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { ArrowButton } from '@/components/cozy/ArrowButton';
 import { CozyText } from '@/components/cozy/CozyText';
 import { CurrencyPill } from '@/components/cozy/CurrencyPill';
 import { GinghamHeader } from '@/components/cozy/GinghamHeader';
+import { SketchBorder, SketchLine } from '@/components/cozy/SketchBorder';
 import { Toast } from '@/components/cozy/Toast';
 import { ActionBar } from '@/components/game/ActionBar';
 import { BathShelf } from '@/components/game/BathShelf';
 import { BubbleCloud } from '@/components/game/BubbleCloud';
 import { CatDisplay } from '@/components/game/CatDisplay';
+import { DecorateSheet } from '@/components/game/DecorateSheet';
 import { MealShelf } from '@/components/game/MealShelf';
 import { NeedsPanel } from '@/components/game/NeedsPanel';
 import { RoomBackground } from '@/components/game/RoomBackground';
@@ -30,6 +33,8 @@ export default function HomeScreen() {
   const { state } = game;
   const { message, show } = useToast();
   const room = state.selectedRoom;
+  const { height: screenHeight } = useWindowDimensions();
+  const [decorating, setDecorating] = useState(false);
   const asleep = state.cat.sleepingUntil !== null;
 
   // --- where the cat is on screen (for drag & drop) ---
@@ -112,6 +117,7 @@ export default function HomeScreen() {
         />
         <View style={styles.roomName}>
           <CozyText variant="title">{ROOMS[room].name}</CozyText>
+          <SketchBorder radius={radii.pill} />
         </View>
         <View style={styles.catArea} pointerEvents="box-none">
           <View ref={catBox} collapsable={false} onLayout={measureCat} style={styles.catBox}>
@@ -121,23 +127,36 @@ export default function HomeScreen() {
         </View>
         <View style={[styles.arrow, { left: spacing.md }]}><ArrowButton direction="left" onPress={() => changeRoom(-1)} /></View>
         <View style={[styles.arrow, { right: spacing.md }]}><ArrowButton direction="right" onPress={() => changeRoom(1)} /></View>
+        {!decorating && room === 'kitchen' ? (
+          <View style={styles.shelfSlot} pointerEvents="box-none">
+            <MealShelf meals={state.meals} onDragStart={measureCat} onDrop={onMealDrop} />
+          </View>
+        ) : null}
+        {!decorating && room === 'bathroom' ? (
+          <View style={styles.shelfSlot} pointerEvents="box-none">
+            <BathShelf stepIndex={bath.step} progress={bath.progress} onDragStart={onBathStart} onMove={onBathMove} onRelease={onBathRelease} />
+          </View>
+        ) : null}
         <Toast message={message} top={56} />
       </View>
 
-      {room === 'kitchen' ? <MealShelf meals={state.meals} onDragStart={measureCat} onDrop={onMealDrop} /> : null}
-      {room === 'bathroom' ? (
-        <BathShelf stepIndex={bath.step} progress={bath.progress} onDragStart={onBathStart} onMove={onBathMove} onRelease={onBathRelease} />
-      ) : null}
-
-      <View style={styles.panel}>
+      {/* Kept in the layout (just invisible) while decorating so the room never changes size. */}
+      <View style={[styles.panel, decorating && styles.panelHidden]} pointerEvents={decorating ? 'none' : 'auto'}>
+        <SketchLine style={styles.panelLine} />
         <NeedsPanel needs={state.cat.needs} />
         <ActionBar
           onCook={() => router.push('/kitchen')}
-          onDecorate={() => router.push('/decorate')}
+          onDecorate={() => setDecorating(true)}
           onDress={() => router.push('/wardrobe')}
           onShop={() => router.push('/shop')}
         />
       </View>
+
+      {decorating ? (
+        <Animated.View entering={SlideInDown.duration(220)} exiting={SlideOutDown.duration(220)} style={styles.sheetSlot}>
+          <DecorateSheet room={room} bodyHeight={Math.round(screenHeight * 0.3)} onClose={() => setDecorating(false)} onToast={show} />
+        </Animated.View>
+      ) : null}
     </View>
   );
 }
@@ -152,8 +171,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: radii.pill,
     backgroundColor: colors.creamWhite,
-    borderWidth: outlineWidth.regular,
-    borderColor: colors.outline,
   },
   catArea: { ...StyleSheet.absoluteFillObject, top: '36%', alignItems: 'center' },
   catBox: { width: 220, height: 190 },
@@ -163,7 +180,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     paddingBottom: spacing.lg,
     backgroundColor: colors.bgApp,
-    borderTopWidth: outlineWidth.regular,
-    borderTopColor: colors.outline,
   },
+  panelHidden: { opacity: 0 },
+  shelfSlot: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+  sheetSlot: { position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 40 },
+  panelLine: { position: 'absolute', left: 0, right: 0, top: -4 },
 });

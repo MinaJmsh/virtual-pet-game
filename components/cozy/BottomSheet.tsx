@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing } from '@/theme/tokens';
 import { CollapseButton } from './CollapseButton';
 import { FolderTab, FolderTabRow } from './FolderTabRow';
@@ -18,7 +17,6 @@ interface Props {
 
 /** Folder-tab strip + collapsible body. Slides closed in 220ms via the red chevron button. */
 export function BottomSheet({ tabs, activeTab, onTabChange, collapsed, onToggleCollapsed, bodyHeight, children }: Props) {
-  const insets = useSafeAreaInsets();
   const reduceMotion = useReducedMotion();
   const height = useSharedValue(collapsed ? 0 : bodyHeight);
 
@@ -39,7 +37,6 @@ export function BottomSheet({ tabs, activeTab, onTabChange, collapsed, onToggleC
       <Animated.View style={[styles.body, bodyStyle]}>
         <View style={{ height: bodyHeight }}>{children}</View>
       </Animated.View>
-      <View style={{ height: insets.bottom, backgroundColor: colors.bgApp }} />
     </View>
   );
 }

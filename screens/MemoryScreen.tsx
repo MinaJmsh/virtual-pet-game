@@ -8,6 +8,7 @@ import { CurrencyPill } from '@/components/cozy/CurrencyPill';
 import { GinghamHeader } from '@/components/cozy/GinghamHeader';
 import { PopupCard } from '@/components/cozy/PopupCard';
 import { PressableScale } from '@/components/cozy/PressableScale';
+import { SketchBorder } from '@/components/cozy/SketchBorder';
 import { MEMORY_MAX_COINS, MEMORY_MIN_COINS } from '@/game/config';
 import { useGame } from '@/game/GameContext';
 import { ActionResult } from '@/game/types';
@@ -98,6 +99,7 @@ export default function MemoryScreen() {
                   style={[styles.card, faceUp ? (c.matched ? styles.matched : styles.up) : styles.down]}
                 >
                   <CozyText variant="title" style={styles.face}>{faceUp ? c.emoji : '❓'}</CozyText>
+                  <SketchBorder radius={radii.cell} color={c.matched ? colors.outlineSoft : colors.outline} />
                 </PressableScale>
               </View>
             );
@@ -126,10 +128,10 @@ const styles = StyleSheet.create({
   hint: { textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   slot: { width: '33.33%', aspectRatio: 1, padding: spacing.xs },
-  card: { flex: 1, borderRadius: radii.cell, borderWidth: outlineWidth.regular, borderColor: colors.outline, alignItems: 'center', justifyContent: 'center' },
+  card: { flex: 1, borderRadius: radii.cell, alignItems: 'center', justifyContent: 'center' },
   down: { backgroundColor: colors.coral },
   up: { backgroundColor: colors.creamWhite },
-  matched: { backgroundColor: colors.cardFill, borderColor: colors.outlineSoft },
+  matched: { backgroundColor: colors.cardFill },
   face: { fontSize: 38, lineHeight: 46 },
   buttons: { flexDirection: 'row', gap: spacing.lg },
 });

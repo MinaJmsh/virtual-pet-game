@@ -2,10 +2,11 @@ import React, { useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Illustration } from '@/components/cozy/Illustration';
 import { PressableScale } from '@/components/cozy/PressableScale';
+import { SketchLine } from '@/components/cozy/SketchBorder';
 import { getItem } from '@/data/items';
 import { PLACE_SLOTS, RoomAction, ROOMS } from '@/data/rooms';
 import { RoomId } from '@/game/types';
-import { colors, outlineWidth } from '@/theme/tokens';
+import { colors } from '@/theme/tokens';
 
 const STRIPE = 24;
 const TILE = 44;
@@ -29,13 +30,17 @@ export function RoomBackground({ room, onObjectPress, dark, placed = [] }: Props
   return (
     <View style={StyleSheet.absoluteFill}>
       <View style={styles.tileTop} />
-      <View style={styles.band} />
+      <View style={styles.band}>
+        <SketchLine style={styles.lineTop} />
+        <SketchLine style={styles.lineBottom} />
+      </View>
       <View style={styles.wall}>
         {stripes.map((i) => (
           <View key={i} style={{ width: STRIPE, backgroundColor: i % 2 ? colors.wallStripe : colors.wallCream }} />
         ))}
       </View>
       <View style={styles.floor}>
+        <SketchLine style={styles.floorLine} />
         {tiles.map((row, r) => (
           <View key={r} style={styles.tileRow}>
             {row.map((v, c) => (
@@ -75,9 +80,12 @@ export function RoomBackground({ room, onObjectPress, dark, placed = [] }: Props
 
 const styles = StyleSheet.create({
   tileTop: { height: '12%', backgroundColor: colors.wallTopGreen },
-  band: { height: 18, backgroundColor: colors.wallBorderPink, borderTopWidth: outlineWidth.regular, borderBottomWidth: outlineWidth.regular, borderColor: colors.outline },
+  band: { height: 18, backgroundColor: colors.wallBorderPink },
   wall: { height: '26%', flexDirection: 'row' },
-  floor: { flex: 1, borderTopWidth: outlineWidth.regular, borderTopColor: colors.outline, overflow: 'hidden' },
+  floor: { flex: 1, overflow: 'hidden' },
+  lineTop: { position: 'absolute', left: 0, right: 0, top: -4 },
+  lineBottom: { position: 'absolute', left: 0, right: 0, bottom: -4 },
+  floorLine: { position: 'absolute', left: 0, right: 0, top: 0, zIndex: 2 },
   tileRow: { flexDirection: 'row' },
   night: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(80,60,100,0.35)' },
 });
