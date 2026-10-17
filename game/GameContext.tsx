@@ -1,11 +1,19 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState } from 'react-native';
-import * as actions from './careActions';
-import { TICK_MS } from './config';
-import { claimFishing } from './fishing';
-import { applyElapsed } from './needs';
-import { loadGame, saveGame } from './storage';
-import { ActionResult, EquipSlot, GameState, RoomId } from './types';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { AppState } from "react-native";
+import * as actions from "./careActions";
+import { TICK_MS } from "./config";
+import { claimFishing } from "./fishing";
+import { applyElapsed } from "./needs";
+import { loadGame, saveGame } from "./storage";
+import { ActionResult, EquipSlot, GameState, RoomId } from "./types";
 
 interface GameApi {
   state: GameState;
@@ -15,6 +23,7 @@ interface GameApi {
   pet: () => ActionResult;
   toggleSleep: () => ActionResult;
   buy: (itemId: string) => ActionResult;
+  buyIngredient: (id: string) => ActionResult;
   toggleEquip: (itemId: string) => ActionResult;
   unequip: (slot: EquipSlot) => ActionResult;
   togglePlace: (itemId: string, room: RoomId) => ActionResult;
@@ -47,8 +56,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   // Keep time moving while the app is open and when it returns to the foreground.
   useEffect(() => {
     const id = setInterval(tick, TICK_MS);
-    const sub = AppState.addEventListener('change', (status) => {
-      if (status === 'active') tick();
+    const sub = AppState.addEventListener("change", (status) => {
+      if (status === "active") tick();
       else if (ref.current) saveGame(ref.current);
     });
     return () => {
@@ -78,12 +87,19 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       pet: () => run((s, now) => actions.pet(s, now)),
       toggleSleep: () => run((s, now) => actions.toggleSleep(s, now)),
       buy: (id) => run((s) => actions.buy(s, id)),
+      buyIngredient: (id) => run((s) => actions.buyIngredient(s, id)),
       toggleEquip: (id) => run((s) => actions.toggleEquip(s, id)),
       unequip: (slot) => run((s) => actions.unequipSlot(s, slot)),
       togglePlace: (id, room) => run((s) => actions.togglePlace(s, id, room)),
-      claimFishing: (score, caught) => run((s) => claimFishing(s, score, caught)),
-      claimReward: (coins, fish) => run((s) => actions.claimReward(s, coins, fish)),
-      selectRoom: (room) => commit({ ...applyElapsed(ref.current as GameState, Date.now()), selectedRoom: room }),
+      claimFishing: (score, caught) =>
+        run((s) => claimFishing(s, score, caught)),
+      claimReward: (coins, fish) =>
+        run((s) => actions.claimReward(s, coins, fish)),
+      selectRoom: (room) =>
+        commit({
+          ...applyElapsed(ref.current as GameState, Date.now()),
+          selectedRoom: room,
+        }),
     };
   }, [state, run, commit]);
 
@@ -93,6 +109,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
 export function useGame(): GameApi {
   const ctx = useContext(GameContext);
-  if (!ctx) throw new Error('useGame must be used inside <GameProvider>');
+  if (!ctx) throw new Error("useGame must be used inside <GameProvider>");
   return ctx;
 }

@@ -1,43 +1,60 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { ActionButton } from '@/components/cozy/ActionButton';
-import { CozyText } from '@/components/cozy/CozyText';
-import { Illustration } from '@/components/cozy/Illustration';
-import { ShopItem } from '@/data/items';
-import { SketchLine } from '@/components/cozy/SketchBorder';
-import { colors, spacing } from '@/theme/tokens';
+import { ActionButton } from "@/components/cozy/ActionButton";
+import { CozyText } from "@/components/cozy/CozyText";
+import { Illustration } from "@/components/cozy/Illustration";
+import { SketchLine } from "@/components/cozy/SketchBorder";
+import { colors, spacing } from "@/theme/tokens";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 
-interface Props {
-  item: ShopItem | null;
-  owned: boolean;
-  equipped: boolean;
-  canAfford: boolean;
-  onBuy: () => void;
-  onToggleEquip: () => void;
+export interface ShopDetail {
+  name: string;
+  icon: string;
+  description: string;
 }
 
-/** Bottom bar for the selected shop item: shows what it is and offers Buy / Use / Remove. */
-export function ShopActionBar({ item, owned, equipped, canAfford, onBuy, onToggleEquip }: Props) {
+export interface ShopAction {
+  icon: string;
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+}
+
+interface Props {
+  item: ShopDetail | null;
+  subtitle: string; // price / owned info
+  action: ShopAction | null;
+}
+
+/** Bottom bar for the selected shop entry: icon, name, description, price and the action button. */
+export function ShopActionBar({ item, subtitle, action }: Props) {
   return (
     <View style={styles.bar}>
       <SketchLine style={styles.topLine} />
       {item ? (
         <>
-          <Illustration icon={item.icon} size={40} />
+          <Illustration icon={item.icon} size={44} />
           <View style={styles.info}>
-            <CozyText variant="title" numberOfLines={1}>{item.name}</CozyText>
-            <CozyText variant="caption" color="textSecondary">{owned ? 'Owned' : `🪙 ${item.price}`}</CozyText>
+            <CozyText variant="title" numberOfLines={1}>
+              {item.name}
+            </CozyText>
+            <CozyText variant="label" color="textSecondary" numberOfLines={2}>
+              {item.description}
+            </CozyText>
+            <CozyText variant="caption">{subtitle}</CozyText>
           </View>
-          {!owned ? (
-            <ActionButton icon="🛍️" label="Buy" onPress={onBuy} disabled={!canAfford} />
-          ) : item.slot ? (
-            <ActionButton icon={equipped ? '❌' : '✅'} label={equipped ? 'Remove' : 'Use'} onPress={onToggleEquip} />
-          ) : (
-            <ActionButton icon="🏠" label="Owned" onPress={() => {}} disabled />
-          )}
+          {action ? (
+            <ActionButton
+              icon={action.icon}
+              label={action.label}
+              onPress={action.onPress}
+              disabled={action.disabled}
+            />
+          ) : null}
         </>
       ) : (
-        <CozyText variant="label" color="textSecondary">Tap an item to see details</CozyText>
+        <CozyText variant="label" color="textSecondary">
+          Tap an item to see details
+        </CozyText>
       )}
     </View>
   );
@@ -45,13 +62,13 @@ export function ShopActionBar({ item, owned, equipped, canAfford, onBuy, onToggl
 
 const styles = StyleSheet.create({
   bar: {
-    minHeight: 76,
-    flexDirection: 'row',
-    alignItems: 'center',
+    minHeight: 92,
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
     padding: spacing.md,
     backgroundColor: colors.bgApp,
   },
-  topLine: { position: 'absolute', left: 0, right: 0, top: -4 },
-  info: { flex: 1 },
+  topLine: { position: "absolute", left: 0, right: 0, top: -4 },
+  info: { flex: 1, gap: 2 },
 });

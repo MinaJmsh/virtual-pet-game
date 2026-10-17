@@ -11,12 +11,13 @@ interface Props {
   onTabChange: (key: string) => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
-  bodyHeight: number; // content height when open (safe-area padding is added on top)
+  bodyHeight: number; // content height when open
+  overlap?: boolean; // let the tab strip overlap the view above it
   children: ReactNode;
 }
 
 /** Folder-tab strip + collapsible body. Slides closed in 220ms via the red chevron button. */
-export function BottomSheet({ tabs, activeTab, onTabChange, collapsed, onToggleCollapsed, bodyHeight, children }: Props) {
+export function BottomSheet({ tabs, activeTab, onTabChange, collapsed, onToggleCollapsed, bodyHeight, overlap, children }: Props) {
   const reduceMotion = useReducedMotion();
   const height = useSharedValue(collapsed ? 0 : bodyHeight);
 
@@ -29,7 +30,7 @@ export function BottomSheet({ tabs, activeTab, onTabChange, collapsed, onToggleC
   return (
     <View style={styles.sheet}>
       <View>
-        <FolderTabRow tabs={tabs} activeKey={activeTab} onChange={onTabChange} />
+        <FolderTabRow tabs={tabs} activeKey={activeTab} onChange={onTabChange} overlap={overlap} />
         <View style={styles.collapse}>
           <CollapseButton collapsed={collapsed} onPress={onToggleCollapsed} />
         </View>
@@ -42,7 +43,7 @@ export function BottomSheet({ tabs, activeTab, onTabChange, collapsed, onToggleC
 }
 
 const styles = StyleSheet.create({
-  sheet: { backgroundColor: colors.bgApp },
+  sheet: {}, // transparent: the room shows beside the tab bump
   body: { overflow: 'hidden', backgroundColor: colors.bgApp },
   collapse: { position: 'absolute', right: spacing.md, bottom: 8, zIndex: 3 },
 });

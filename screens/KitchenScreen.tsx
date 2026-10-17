@@ -19,12 +19,12 @@ export default function KitchenScreen() {
 
   return (
     <View style={styles.screen}>
-      <GinghamHeader>
+      <GinghamHeader withTab>
         <BackButton />
         <CurrencyPill icon="🐟" value={state.ingredients.fish ?? 0} />
         <CurrencyPill icon="🪙" value={state.coins} />
       </GinghamHeader>
-      <FolderTabRow tabs={[{ key: 'recipes', icon: '🍳' }]} activeKey="recipes" onChange={() => {}} />
+      <FolderTabRow tabs={[{ key: 'recipes', icon: '🍳' }]} activeKey="recipes" onChange={() => {}} overlap />
       <CozyList
         data={RECIPES}
         keyExtractor={(r) => r.id}

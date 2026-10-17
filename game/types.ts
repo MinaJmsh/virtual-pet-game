@@ -1,10 +1,9 @@
-export type NeedKey = 'hunger' | 'energy' | 'hygiene' | 'happiness';
+export type NeedKey = "hunger" | "energy" | "hygiene" | "happiness";
 export type Needs = Record<NeedKey, number>;
-export type LifeStage = 'kitten' | 'young' | 'adult';
-export type RoomId = 'kitchen' | 'playroom' | 'bathroom' | 'bedroom';
-export type ItemCategory = 'outfits' | 'furniture' | 'decor';
-export type EquipSlot = 'head' | 'neck';
-
+export type LifeStage = "kitten" | "young" | "adult";
+export type RoomId = "kitchen" | "playroom" | "bathroom" | "bedroom";
+export type ItemCategory = "outfits" | "furniture" | "decor";
+export type EquipSlot = "head" | "neck" | "top";
 export interface CatState {
   name: string;
   lifeStage: LifeStage;

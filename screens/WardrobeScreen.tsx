@@ -60,6 +60,7 @@ export default function WardrobeScreen() {
         collapsed={collapsed}
         onToggleCollapsed={() => setCollapsed((c) => !c)}
         bodyHeight={Math.round(height * 0.36)}
+        overlap
       >
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pillsScroll} contentContainerStyle={styles.pills}>
           {SLOTS.map((s) => (

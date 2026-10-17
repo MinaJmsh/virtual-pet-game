@@ -25,12 +25,12 @@ export default function GamesScreen() {
   const { state } = useGame();
   return (
     <View style={styles.screen}>
-      <GinghamHeader>
+      <GinghamHeader withTab>
         <BackButton />
         <CurrencyPill icon="🪙" value={state.coins} />
         <CurrencyPill icon="🐟" value={state.ingredients.fish ?? 0} />
       </GinghamHeader>
-      <FolderTabRow tabs={[{ key: 'games', icon: '🎮' }]} activeKey="games" onChange={() => {}} />
+      <FolderTabRow tabs={[{ key: 'games', icon: '🎮' }]} activeKey="games" onChange={() => {}} overlap />
       <CozyList
         data={GAMES}
         keyExtractor={(g) => g.id}
