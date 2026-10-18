@@ -28,9 +28,9 @@ export function RecipeRow({ recipe, owned, onCook }: Props) {
       <View style={styles.middle}>
         <CozyText
           variant="title"
-          numberOfLines={1}
+          numberOfLines={2}
           adjustsFontSizeToFit
-          minimumFontScale={0.8}
+          minimumFontScale={0.75}
         >
           {recipe.name}
         </CozyText>
@@ -60,6 +60,6 @@ export function RecipeRow({ recipe, owned, onCook }: Props) {
 
 const styles = StyleSheet.create({
   middle: { flex: 1, gap: spacing.sm },
-  chips: { flexDirection: "row", gap: spacing.md },
-  chip: { alignItems: "center" },
+  chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
+  chip: { alignItems: "center", minWidth: 34 },
 });

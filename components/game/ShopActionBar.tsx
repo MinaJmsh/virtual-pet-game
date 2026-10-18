@@ -1,14 +1,14 @@
 import { ActionButton } from "@/components/cozy/ActionButton";
 import { CozyText } from "@/components/cozy/CozyText";
-import { Illustration } from "@/components/cozy/Illustration";
+import { IconSource, Illustration } from "@/components/cozy/Illustration";
 import { SketchLine } from "@/components/cozy/SketchBorder";
 import { colors, spacing } from "@/theme/tokens";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-
+// ...
 export interface ShopDetail {
   name: string;
-  icon: string;
+  icon: IconSource; // was string
   description: string;
 }
 

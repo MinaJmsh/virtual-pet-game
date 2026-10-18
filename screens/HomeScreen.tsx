@@ -3,7 +3,7 @@ import { CozyText } from "@/components/cozy/CozyText";
 import { CurrencyPill } from "@/components/cozy/CurrencyPill";
 import { TAB_ROW_HEIGHT } from "@/components/cozy/FolderTabRow";
 import { GinghamHeader } from "@/components/cozy/GinghamHeader";
-import { Illustration } from "@/components/cozy/Illustration";
+import { IconSource, Illustration } from "@/components/cozy/Illustration";
 import { SHELF_HEIGHT } from "@/components/cozy/ShelfBar";
 import { SketchBorder, SketchLine } from "@/components/cozy/SketchBorder";
 import { Toast } from "@/components/cozy/Toast";
@@ -28,6 +28,7 @@ import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated";
+// ...
 
 const HIT_PAD = 24; // forgiving drop area around the cat
 type Rect = { x: number; y: number; w: number; h: number };
@@ -41,11 +42,12 @@ export default function HomeScreen() {
   const room = state.selectedRoom;
   const [panelHeight, setPanelHeight] = useState(150);
   const [mode, setMode] = useState<Mode>("none");
+
   const sheetOpen = mode !== "none";
   const asleep = state.cat.sleepingUntil !== null;
   // The meal being dragged from the shelf: drawn as a floating copy that follows the finger.
   const [drag, setDrag] = useState<{
-    icon: string;
+    icon: IconSource;
     x: number;
     y: number;
   } | null>(null);

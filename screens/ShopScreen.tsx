@@ -5,6 +5,7 @@ import { CurrencyPill } from "@/components/cozy/CurrencyPill";
 import { FolderTab, FolderTabRow } from "@/components/cozy/FolderTabRow";
 import { GinghamHeader } from "@/components/cozy/GinghamHeader";
 import { GridCell } from "@/components/cozy/GridCell";
+import { IconSource } from "@/components/cozy/Illustration";
 import { Toast } from "@/components/cozy/Toast";
 import { ShopAction, ShopActionBar } from "@/components/game/ShopActionBar";
 import { SHOP_ITEMS } from "@/data/items";
@@ -43,11 +44,10 @@ interface Entry {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  icon: IconSource; // was string
   price: number;
   slot?: EquipSlot;
 }
-
 export default function ShopScreen() {
   const game = useGame();
   const { state } = game;
