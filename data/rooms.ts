@@ -2,7 +2,8 @@ import { RoomId } from "@/game/types";
 
 // lamp: toggles sleep (bedroom). games: opens the mini games menu (playroom).
 export type RoomAction = "lamp" | "games";
-export const FREE_PLACEMENT_ROOMS: RoomId[] = ["bedroom"];
+// Rooms where furniture is placed freely on a grid.
+export const FREE_PLACEMENT_ROOMS: RoomId[] = ["bedroom", "kitchen"];
 export const MAX_FURNITURE = 10;
 
 export interface RoomObject {
@@ -35,11 +36,7 @@ export const MAX_PLACED = PLACE_SLOTS.length;
 export const ROOMS: Record<RoomId, { name: string; objects: RoomObject[] }> = {
   kitchen: {
     name: "Kitchen",
-    objects: [
-      { id: "fridge", icon: "🧊", x: 72, y: 4, size: 60 },
-      { id: "pan", icon: "🍳", x: 12, y: 8, size: 48 },
-      { id: "bowl", icon: "🥣", x: 68, y: 72, size: 46 },
-    ],
+    objects: [],
   },
   playroom: {
     name: "Playroom",
@@ -68,7 +65,6 @@ export const ROOMS: Record<RoomId, { name: string; objects: RoomObject[] }> = {
   bedroom: {
     name: "Bedroom",
     objects: [
-      // { id: "window", icon: "🪟", x: 14, y: 4, size: 60 },
       {
         id: "lamp",
         icon: "💡",
@@ -79,8 +75,6 @@ export const ROOMS: Record<RoomId, { name: string; objects: RoomObject[] }> = {
         size: 52,
         action: "lamp",
       },
-      // { id: 'bed', icon: '🛏️', x: 64, y: 66, size: 66 },
-      // { id: 'plant', icon: '🪴', x: 6, y: 74, size: 44 },
     ],
   },
 };

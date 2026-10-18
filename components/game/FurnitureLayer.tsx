@@ -1,6 +1,7 @@
-import { colors } from "@/theme/tokens";
-import { FURNITURE_BY_ID, FurnitureDef } from "@/data/bedroomFurniture";
+import { FurnitureDef } from "@/data/bedroomFurniture";
+import { FURNITURE_BY_ID } from "@/data/furniture";
 import { PlacedItem } from "@/game/types";
+import { colors } from "@/theme/tokens";
 import { clampSpot, Grid, spanOf } from "@/utils/furnitureGrid";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Image, PanResponder, StyleSheet, View } from "react-native";
@@ -78,7 +79,15 @@ interface ItemProps {
   onPreview: (p: Preview | null) => void;
 }
 
-function FurnitureItem({ grid, def, id, spot, editable, onMove, onPreview }: ItemProps) {
+function FurnitureItem({
+  grid,
+  def,
+  id,
+  spot,
+  editable,
+  onMove,
+  onPreview,
+}: ItemProps) {
   const { cw, ch } = spanOf(def);
   const pan = useRef(new Animated.ValueXY()).current;
   const [dragging, setDragging] = useState(false);
@@ -93,7 +102,12 @@ function FurnitureItem({ grid, def, id, spot, editable, onMove, onPreview }: Ite
 
   const target = (dx: number, dy: number) => {
     const l = live.current;
-    return clampSpot(l.grid, l.def, l.spot.col + dx / l.grid.cell, l.spot.row + dy / l.grid.cell);
+    return clampSpot(
+      l.grid,
+      l.def,
+      l.spot.col + dx / l.grid.cell,
+      l.spot.row + dy / l.grid.cell,
+    );
   };
 
   const responder = useRef(
@@ -108,14 +122,18 @@ function FurnitureItem({ grid, def, id, spot, editable, onMove, onPreview }: Ite
       },
       onPanResponderMove: (_, g) => {
         pan.setValue({ x: g.dx, y: g.dy });
-        live.current.onPreview({ ...target(g.dx, g.dy), ...spanOf(live.current.def) });
+        live.current.onPreview({
+          ...target(g.dx, g.dy),
+          ...spanOf(live.current.def),
+        });
       },
       onPanResponderRelease: (_, g) => {
         const l = live.current;
         const t = target(g.dx, g.dy);
         setDragging(false);
         l.onPreview(null);
-        if (t.col === l.spot.col && t.row === l.spot.row) pan.setValue({ x: 0, y: 0 });
+        if (t.col === l.spot.col && t.row === l.spot.row)
+          pan.setValue({ x: 0, y: 0 });
         else l.onMove(l.id, t.col, t.row);
       },
       onPanResponderTerminate: () => {
@@ -138,7 +156,10 @@ function FurnitureItem({ grid, def, id, spot, editable, onMove, onPreview }: Ite
           height: ch * grid.cell,
           zIndex: dragging ? 100 : 0,
           opacity: dragging ? 0.9 : 1,
-          transform: [...pan.getTranslateTransform(), { scale: dragging ? 1.05 : 1 }],
+          transform: [
+            ...pan.getTranslateTransform(),
+            { scale: dragging ? 1.05 : 1 },
+          ],
         },
       ]}
     >
@@ -152,7 +173,11 @@ function FurnitureItem({ grid, def, id, spot, editable, onMove, onPreview }: Ite
 }
 
 const styles = StyleSheet.create({
-  item: { position: "absolute", alignItems: "center", justifyContent: "flex-end" },
+  item: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
   preview: {
     position: "absolute",
     borderRadius: 8,

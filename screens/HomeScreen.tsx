@@ -18,7 +18,7 @@ import { MealShelf } from "@/components/game/MealShelf";
 import { NeedsPanel } from "@/components/game/NeedsPanel";
 import { RoomBackground } from "@/components/game/RoomBackground";
 import { BATH_STEPS } from "@/data/bathSteps";
-import { FURNITURE_BY_ID } from "@/data/bedroomFurniture";
+import { FURNITURE_BY_ID } from "@/data/furniture";
 import { ShopItem } from "@/data/items";
 import { RECIPES } from "@/data/recipes";
 import {
@@ -70,7 +70,7 @@ export default function HomeScreen() {
       rootPos.current = { x, y };
     });
 
-  // --- free placement (bedroom): furniture sits on a grid ---
+  // --- free placement (bedroom and kitchen): furniture sits on a grid ---
   const [roomSize, setRoomSize] = useState({ w: 0, h: 0 });
   const grid = useMemo(
     () => makeGrid(roomSize.w, roomSize.h),

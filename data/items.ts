@@ -1,6 +1,8 @@
 import { IconSource } from "@/components/cozy/Illustration";
 import { EquipSlot, ItemCategory, RoomId } from "@/game/types";
 import { BEDROOM_FURNITURE } from "./bedroomFurniture";
+import { KITCHEN_FURNITURE } from "./kitchenFurniture";
+
 export interface ShopItem {
   id: string;
   name: string;
@@ -109,43 +111,18 @@ export const SHOP_ITEMS: ShopItem[] = [
     slot: "neck",
   },
 
-  // kitchen
-  {
-    id: "dining_chair",
-    name: "Chair",
-    description: "A sturdy chair for sitting at the table.",
-    icon: "🪑",
-    category: "furniture",
-    price: 70,
-    room: "kitchen",
-  },
-  {
-    id: "fruit_bowl",
-    name: "Fruit Bowl",
-    description: "Fresh fruit makes the kitchen feel lively.",
-    icon: "🍎",
-    category: "decor",
-    price: 30,
-    room: "kitchen",
-  },
-  {
-    id: "teapot",
-    name: "Teapot",
-    description: "A little teapot for cozy afternoons.",
-    icon: "🫖",
-    category: "decor",
-    price: 35,
-    room: "kitchen",
-  },
-  {
-    id: "cake_stand",
-    name: "Cake Stand",
-    description: "Sweet to look at, sweeter to dream about.",
-    icon: "🍰",
-    category: "decor",
-    price: 40,
-    room: "kitchen",
-  },
+  // kitchen: free-placement furniture
+  ...KITCHEN_FURNITURE.map(
+    (f): ShopItem => ({
+      id: f.id,
+      name: f.name,
+      description: f.description,
+      icon: f.icon,
+      category: "furniture",
+      price: f.price,
+      room: "kitchen",
+    }),
+  ),
 
   // playroom
   {
@@ -232,52 +209,6 @@ export const SHOP_ITEMS: ShopItem[] = [
     room: "bathroom",
   },
 
-  // bedroom
-  // {
-  //   id: "bed",
-  //   name: "Soft Bed",
-  //   description: "The comfiest place to curl up and dream.",
-  //   icon: "🛏️",
-  //   category: "furniture",
-  //   price: 60,
-  //   room: "bedroom",
-  // },
-  // {
-  //   id: "bookshelf",
-  //   name: "Bookshelf",
-  //   description: "Stories for quiet evenings.",
-  //   icon: "📚",
-  //   category: "furniture",
-  //   price: 60,
-  //   room: "bedroom",
-  // },
-  // {
-  //   id: "plant",
-  //   name: "Plant",
-  //   description: "A leafy friend that brightens the room.",
-  //   icon: "🪴",
-  //   category: "decor",
-  //   price: 35,
-  //   room: "bedroom",
-  // },
-  // {
-  //   id: "lamp",
-  //   name: "Desk Lamp",
-  //   description: "A warm little glow by the bedside.",
-  //   icon: "💡",
-  //   category: "decor",
-  //   price: 35,
-  //   room: "bedroom",
-  // },
-  // {
-  //   id: "clock",
-  //   name: "Alarm Clock",
-  //   description: "Tick, tock. Time for a nap.",
-  //   icon: "⏰",
-  //   category: "decor",
-  //   price: 30,
-  //   room: "bedroom",
-  // },
   // bedroom: free-placement furniture
   ...BEDROOM_FURNITURE.map(
     (f): ShopItem => ({
