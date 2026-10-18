@@ -4,6 +4,11 @@ export type LifeStage = "kitten" | "young" | "adult";
 export type RoomId = "kitchen" | "playroom" | "bathroom" | "bedroom";
 export type ItemCategory = "outfits" | "furniture" | "decor";
 export type EquipSlot = "head" | "neck" | "top";
+export interface PlacedItem {
+  id: string;
+  col: number; // grid column
+  row: number; // grid row
+}
 export interface CatState {
   name: string;
   lifeStage: LifeStage;
@@ -24,6 +29,7 @@ export interface GameState {
   placed: Partial<Record<RoomId, string[]>>; // decorations placed per room
   selectedRoom: RoomId;
   lastPetAt: number;
+  layout: Partial<Record<RoomId, PlacedItem[]>>; // free-placement furniture per room
 }
 
 export interface ActionResult {

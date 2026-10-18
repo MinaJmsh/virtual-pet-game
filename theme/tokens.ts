@@ -1,6 +1,6 @@
 // Single source of truth for the cozy kawaii look. Never hard-code values in screens.
 export const colors = {
-  outline: "#6B4A3F",
+  outline: "#7B5549",
   outlineSoft: "#B9A59B",
   textPrimary: "#6A5048",
   textSecondary: "#8C746B",

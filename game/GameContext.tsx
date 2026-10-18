@@ -30,6 +30,13 @@ interface GameApi {
   claimFishing: (score: number, caught: number) => ActionResult;
   claimReward: (coins: number, fish?: number) => ActionResult;
   selectRoom: (room: RoomId) => void;
+  placeFurniture: (
+    itemId: string,
+    room: RoomId,
+    col: number,
+    row: number,
+  ) => ActionResult;
+  removeFurniture: (itemId: string, room: RoomId) => ActionResult;
 }
 
 const GameContext = createContext<GameApi | null>(null);
@@ -91,6 +98,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       toggleEquip: (id) => run((s) => actions.toggleEquip(s, id)),
       unequip: (slot) => run((s) => actions.unequipSlot(s, slot)),
       togglePlace: (id, room) => run((s) => actions.togglePlace(s, id, room)),
+      placeFurniture: (id, room, col, row) =>
+        run((s) => actions.placeFurniture(s, id, room, col, row)),
+      removeFurniture: (id, room) =>
+        run((s) => actions.removeFurniture(s, id, room)),
       claimFishing: (score, caught) =>
         run((s) => claimFishing(s, score, caught)),
       claimReward: (coins, fish) =>

@@ -1,35 +1,62 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ROOM_ORDER } from '@/data/rooms';
-import { SAVE_KEY, SAVE_VERSION } from './config';
-import { createInitialState } from './initialState';
-import { clamp } from './needs';
-import { GameState, NeedKey } from './types';
+import { ROOM_ORDER } from "@/data/rooms";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SAVE_KEY, SAVE_VERSION } from "./config";
+import { createInitialState } from "./initialState";
+import { clamp } from "./needs";
+import { GameState, NeedKey, RoomId } from "./types";
+
+function sanitizeLayout(raw: unknown): GameState["layout"] {
+  const out: GameState["layout"] = {};
+  if (!raw || typeof raw !== "object") return out;
+  (Object.keys(raw) as RoomId[]).forEach((r) => {
+    const list = (raw as Record<string, unknown>)[r];
+    if (Array.isArray(list))
+      out[r] = list.filter(
+        (p) =>
+          p &&
+          typeof p.id === "string" &&
+          Number.isFinite(p.col) &&
+          Number.isFinite(p.row),
+      );
+  });
+  return out;
+}
 
 /** Merges whatever was saved over safe defaults so a broken (or older) save never crashes the game. */
 function sanitize(raw: unknown): GameState {
   const base = createInitialState();
-  if (!raw || typeof raw !== 'object') return base;
+  if (!raw || typeof raw !== "object") return base;
   const saved = raw as Partial<GameState>;
 
   const needs = { ...base.cat.needs };
   (Object.keys(needs) as NeedKey[]).forEach((k) => {
     const v = saved.cat?.needs?.[k];
-    if (typeof v === 'number' && Number.isFinite(v)) needs[k] = clamp(v);
+    if (typeof v === "number" && Number.isFinite(v)) needs[k] = clamp(v);
   });
 
   return {
     ...base,
     ...saved,
     saveVersion: SAVE_VERSION,
-    lastUpdated: typeof saved.lastUpdated === 'number' ? saved.lastUpdated : base.lastUpdated,
-    coins: typeof saved.coins === 'number' && saved.coins >= 0 ? saved.coins : base.coins,
+    lastUpdated:
+      typeof saved.lastUpdated === "number"
+        ? saved.lastUpdated
+        : base.lastUpdated,
+    coins:
+      typeof saved.coins === "number" && saved.coins >= 0
+        ? saved.coins
+        : base.coins,
     cat: { ...base.cat, ...saved.cat, needs },
     ingredients: { ...base.ingredients, ...saved.ingredients },
     meals: { ...saved.meals },
     ownedItems: Array.isArray(saved.ownedItems) ? saved.ownedItems : [],
     equipped: { ...saved.equipped },
     placed: { ...saved.placed },
-    selectedRoom: saved.selectedRoom && ROOM_ORDER.includes(saved.selectedRoom) ? saved.selectedRoom : base.selectedRoom,
+    layout: sanitizeLayout(saved.layout),
+    selectedRoom:
+      saved.selectedRoom && ROOM_ORDER.includes(saved.selectedRoom)
+        ? saved.selectedRoom
+        : base.selectedRoom,
   };
 }
 

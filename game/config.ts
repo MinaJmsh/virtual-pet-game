@@ -3,7 +3,7 @@ export const SAVE_VERSION = 2;
 export const SAVE_KEY = "virtual-cat-save";
 
 export const START_NEED = 75;
-export const START_COINS = 50;
+export const START_COINS = 1000000;
 export const MAX_OFFLINE_HOURS = 12;
 
 // Points lost per hour. Full -> empty takes roughly: hunger ~17h, energy ~20h, hygiene/happiness ~25h.

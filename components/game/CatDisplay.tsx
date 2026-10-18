@@ -1,5 +1,4 @@
 import { PressableScale } from "@/components/cozy/PressableScale";
-import { SketchBorder } from "@/components/cozy/SketchBorder";
 import { getItem } from "@/data/items";
 import { getCatFace } from "@/game/mood";
 import { GameState } from "@/game/types";
@@ -40,15 +39,15 @@ export function CatDisplay({
   const bobStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: bob.value }],
   }));
-  const head = getItem(state.equipped.head)?.icon;
-  const neck = getItem(state.equipped.neck)?.icon;
-  const top = getItem(state.equipped.top)?.icon;
+  const head = getItem(state.equipped.head)?.icon as string | undefined;
+  const neck = getItem(state.equipped.neck)?.icon as string | undefined;
+  const top = getItem(state.equipped.top)?.icon as string | undefined;
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.rug}>
+      {/* <View style={styles.rug}>
         <SketchBorder radius={27} />
-      </View>
+      </View> */}
       <PressableScale
         onPress={onPress}
         scaleTo={0.97}
@@ -77,7 +76,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.coral,
   },
   cat: { alignItems: "center", marginBottom: 18 },
-  face: { fontSize: 112, lineHeight: 130 },
+  face: { fontSize: 100, lineHeight: 130 },
   head: { position: "absolute", top: -14, fontSize: 40, lineHeight: 46 },
   neck: { position: "absolute", bottom: 30, fontSize: 30, lineHeight: 36 },
   top: { position: "absolute", bottom: -22, fontSize: 40, lineHeight: 46 },

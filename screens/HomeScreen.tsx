@@ -13,22 +13,35 @@ import { BubbleCloud } from "@/components/game/BubbleCloud";
 import { CatDisplay } from "@/components/game/CatDisplay";
 import { DecorateSheet } from "@/components/game/DecorateSheet";
 import { DressSheet } from "@/components/game/DressSheet";
+import { FurnitureLayer } from "@/components/game/FurnitureLayer";
 import { MealShelf } from "@/components/game/MealShelf";
 import { NeedsPanel } from "@/components/game/NeedsPanel";
 import { RoomBackground } from "@/components/game/RoomBackground";
 import { BATH_STEPS } from "@/data/bathSteps";
+import { FURNITURE_BY_ID } from "@/data/bedroomFurniture";
+import { ShopItem } from "@/data/items";
 import { RECIPES } from "@/data/recipes";
-import { ROOM_ORDER, RoomAction, ROOMS } from "@/data/rooms";
+import {
+  FREE_PLACEMENT_ROOMS,
+  ROOM_ORDER,
+  RoomAction,
+  ROOMS,
+} from "@/data/rooms";
 import { BATH_STEP_GOAL, BATH_TAP_VALUE } from "@/game/config";
 import { useGame } from "@/game/GameContext";
 import { ActionResult, RoomId } from "@/game/types";
 import { useToast } from "@/hooks/use-toast";
 import { colors, radii, spacing } from "@/theme/tokens";
+import {
+  clampSpot,
+  findFreeSpot,
+  makeGrid,
+  spanOf,
+} from "@/utils/furnitureGrid";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated";
-// ...
 
 const HIT_PAD = 24; // forgiving drop area around the cat
 type Rect = { x: number; y: number; w: number; h: number };
@@ -42,7 +55,6 @@ export default function HomeScreen() {
   const room = state.selectedRoom;
   const [panelHeight, setPanelHeight] = useState(150);
   const [mode, setMode] = useState<Mode>("none");
-
   const sheetOpen = mode !== "none";
   const asleep = state.cat.sleepingUntil !== null;
   // The meal being dragged from the shelf: drawn as a floating copy that follows the finger.
@@ -57,6 +69,34 @@ export default function HomeScreen() {
     rootRef.current?.measureInWindow((x, y) => {
       rootPos.current = { x, y };
     });
+
+  // --- free placement (bedroom): furniture sits on a grid ---
+  const [roomSize, setRoomSize] = useState({ w: 0, h: 0 });
+  const grid = useMemo(
+    () => makeGrid(roomSize.w, roomSize.h),
+    [roomSize.w, roomSize.h],
+  );
+  const freeRoom = FREE_PLACEMENT_ROOMS.includes(room);
+  const layout = state.layout?.[room] ?? [];
+
+  const onFurniturePick = (item: ShopItem) => {
+    if (layout.some((p) => p.id === item.id)) {
+      show(game.removeFurniture(item.id, room).message);
+      return;
+    }
+    const def = FURNITURE_BY_ID[item.id];
+    if (!def || !grid) return;
+    const taken = layout.flatMap((p) => {
+      const d = FURNITURE_BY_ID[p.id];
+      if (!d) return [];
+      return [{ ...clampSpot(grid, d, p.col, p.row), ...spanOf(d) }];
+    });
+    const spot = findFreeSpot(grid, def, taken);
+    show(game.placeFurniture(item.id, room, spot.col, spot.row).message);
+  };
+  const onFurnitureMove = (id: string, col: number, row: number) => {
+    game.placeFurniture(id, room, col, row);
+  };
 
   // --- where the cat is on screen (for drag & drop) ---
   const catBox = useRef<View>(null);
@@ -182,14 +222,31 @@ export default function HomeScreen() {
         />
         <CurrencyPill icon="🐟" value={state.ingredients.fish ?? 0} />
       </GinghamHeader>
-      <View style={styles.room}>
+      <View
+        style={styles.room}
+        onLayout={(e) =>
+          setRoomSize({
+            w: e.nativeEvent.layout.width,
+            h: e.nativeEvent.layout.height,
+          })
+        }
+      >
         <RoomBackground
           room={room}
           dark={asleep && room === "bedroom"}
-          placed={state.placed[room]}
+          placed={freeRoom ? undefined : state.placed[room]}
           onObjectPress={onObjectPress}
         />
-        <View style={styles.roomName}>
+        {freeRoom && grid ? (
+          <FurnitureLayer
+            grid={grid}
+            items={layout}
+            editable={mode === "decorate"}
+            dark={asleep && room === "bedroom"}
+            onMove={onFurnitureMove}
+          />
+        ) : null}
+        <View style={styles.roomName} pointerEvents="none">
           <CozyText variant="title">{ROOMS[room].name}</CozyText>
           <SketchBorder radius={radii.pill} />
         </View>
@@ -208,12 +265,17 @@ export default function HomeScreen() {
             </View>
           </View>
         ) : null}
-        <View style={[styles.arrow, { left: spacing.md }]}>
-          <ArrowButton direction="left" onPress={() => changeRoom(-1)} />
-        </View>
-        <View style={[styles.arrow, { right: spacing.md }]}>
-          <ArrowButton direction="right" onPress={() => changeRoom(1)} />
-        </View>
+        {/* In decorate mode the room pills switch rooms, so the arrows are hidden and can't block dragging at the edges. */}
+        {mode !== "decorate" ? (
+          <>
+            <View style={[styles.arrow, { left: spacing.md }]}>
+              <ArrowButton direction="left" onPress={() => changeRoom(-1)} />
+            </View>
+            <View style={[styles.arrow, { right: spacing.md }]}>
+              <ArrowButton direction="right" onPress={() => changeRoom(1)} />
+            </View>
+          </>
+        ) : null}
         {!sheetOpen && room === "kitchen" ? (
           <View style={styles.shelfSlot} pointerEvents="box-none">
             <MealShelf
@@ -267,6 +329,8 @@ export default function HomeScreen() {
               bodyHeight={sheetBodyHeight}
               onClose={() => setMode("none")}
               onToast={show}
+              onPickFurniture={freeRoom ? onFurniturePick : undefined}
+              layoutIds={layout.map((p) => p.id)}
             />
           ) : (
             <DressSheet

@@ -29,6 +29,10 @@ interface Props {
   bodyHeight: number;
   onClose: () => void; // the red chevron closes decorate mode
   onToast: (message: string) => void;
+  /** Rooms with free placement: tapping an item adds it to the room (or removes it if it is already there). */
+  onPickFurniture?: (item: ShopItem) => void;
+  /** Ids of the items already placed in a free-placement room. */
+  layoutIds?: string[];
 }
 
 /** Decorate mode: the pills are the rooms. Tapping one switches the room behind the sheet and shows that room's items. */
@@ -38,11 +42,13 @@ export function DecorateSheet({
   bodyHeight,
   onClose,
   onToast,
+  onPickFurniture,
+  layoutIds,
 }: Props) {
   const game = useGame();
   const router = useRouter();
   const { state } = game;
-  const placedHere = state.placed[room] ?? [];
+  const placedHere = onPickFurniture ? (layoutIds ?? []) : (state.placed[room] ?? []);
 
   const cells = useMemo(() => {
     const owned = SHOP_ITEMS.filter(
@@ -92,13 +98,18 @@ export function DecorateSheet({
                 onPress={() => router.push("/shop")}
               />
             );
+          const isPlaced = placedHere.includes(item.id);
           return (
             <GridCell
               icon={item.icon}
               name={item.name}
-              selected={placedHere.includes(item.id)}
-              statusLabel={placedHere.includes(item.id) ? "Placed" : undefined}
-              onPress={() => onToast(game.togglePlace(item.id, room).message)}
+              selected={isPlaced}
+              statusLabel={isPlaced ? "Placed" : undefined}
+              onPress={() =>
+                onPickFurniture
+                  ? onPickFurniture(item)
+                  : onToast(game.togglePlace(item.id, room).message)
+              }
             />
           );
         }}

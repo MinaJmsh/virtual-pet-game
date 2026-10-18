@@ -1,7 +1,7 @@
 // Pure care/economy actions: (state, args) -> ActionResult. No React, no storage.
 import { SHOP_ITEMS } from "@/data/items";
 import { INGREDIENTS, RECIPES } from "@/data/recipes";
-import { MAX_PLACED } from "@/data/rooms";
+import { MAX_FURNITURE, MAX_PLACED } from "@/data/rooms";
 import {
   BATH_GAIN,
   CARE_COIN_REWARD,
@@ -265,5 +265,48 @@ export function buyIngredient(state: GameState, id: string): ActionResult {
     ok: true,
     coins: -ing.price,
     message: `Bought ${ing.name}!`,
+  };
+}
+export function placeFurniture(
+  state: GameState,
+  itemId: string,
+  room: RoomId,
+  col: number,
+  row: number,
+): ActionResult {
+  const item = SHOP_ITEMS.find((i) => i.id === itemId);
+  if (!item || item.room !== room || item.category === "outfits")
+    return fail(state, "Can't place that");
+  if (!state.ownedItems.includes(itemId)) return fail(state, "Buy it first");
+  const here = state.layout[room] ?? [];
+  const existing = here.some((p) => p.id === itemId);
+  if (!existing && here.length >= MAX_FURNITURE)
+    return fail(state, "This room is full");
+  const next = existing
+    ? here.map((p) => (p.id === itemId ? { ...p, col, row } : p))
+    : [...here, { id: itemId, col, row }];
+  return {
+    state: { ...state, layout: { ...state.layout, [room]: next } },
+    ok: true,
+    coins: 0,
+    message: existing ? "Moved" : `Placed ${item.name}`,
+  };
+}
+
+export function removeFurniture(
+  state: GameState,
+  itemId: string,
+  room: RoomId,
+): ActionResult {
+  const item = SHOP_ITEMS.find((i) => i.id === itemId);
+  const here = state.layout[room] ?? [];
+  return {
+    state: {
+      ...state,
+      layout: { ...state.layout, [room]: here.filter((p) => p.id !== itemId) },
+    },
+    ok: true,
+    coins: 0,
+    message: `Removed ${item?.name ?? "item"}`,
   };
 }
