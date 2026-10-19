@@ -15,6 +15,7 @@ import { EquipSlot, RoomId } from "@/game/types";
 import { useToast } from "@/hooks/use-toast";
 import { colors, spacing } from "@/theme/tokens";
 import { padToColumns } from "@/utils/padToColumns";
+import { useLocalSearchParams } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -44,17 +45,33 @@ interface Entry {
   id: string;
   name: string;
   description: string;
-  icon: IconSource; // was string
+  icon: IconSource;
   price: number;
   slot?: EquipSlot;
 }
+
 export default function ShopScreen() {
   const game = useGame();
   const { state } = game;
   const { message, show } = useToast();
-  const [tab, setTab] = useState<MainTab>("wear");
-  const [wearCat, setWearCat] = useState<EquipSlot>("head");
-  const [decorCat, setDecorCat] = useState<RoomId>("kitchen");
+
+  // The "+" cells in Decorate / Dress open the shop on the matching tab and category.
+  const params = useLocalSearchParams<{ tab?: string; cat?: string }>();
+  const startTab: MainTab = TABS.some((t) => t.key === params.tab)
+    ? (params.tab as MainTab)
+    : "wear";
+
+  const [tab, setTab] = useState<MainTab>(startTab);
+  const [wearCat, setWearCat] = useState<EquipSlot>(
+    startTab === "wear"
+      ? (WEAR_CATS.find((c) => c.key === params.cat)?.key ?? "head")
+      : "head",
+  );
+  const [decorCat, setDecorCat] = useState<RoomId>(
+    startTab === "decor"
+      ? (DECOR_CATS.find((c) => c.key === params.cat)?.key ?? "kitchen")
+      : "kitchen",
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const entries = useMemo<Entry[]>(() => {

@@ -84,7 +84,13 @@ export function DressSheet({ bodyHeight, onClose, onToast }: Props) {
             return (
               <AddCell
                 label="Get more in the shop"
-                onPress={() => router.push("/shop")}
+                // Opens the shop on Wear, in this slot's category.
+                onPress={() =>
+                  router.push({
+                    pathname: "/shop",
+                    params: { tab: "wear", cat: slot },
+                  })
+                }
               />
             );
           if (item === "none") {

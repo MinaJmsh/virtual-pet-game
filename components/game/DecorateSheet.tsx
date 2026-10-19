@@ -48,7 +48,9 @@ export function DecorateSheet({
   const game = useGame();
   const router = useRouter();
   const { state } = game;
-  const placedHere = onPickFurniture ? (layoutIds ?? []) : (state.placed[room] ?? []);
+  const placedHere = onPickFurniture
+    ? (layoutIds ?? [])
+    : (state.placed[room] ?? []);
 
   const cells = useMemo(() => {
     const owned = SHOP_ITEMS.filter(
@@ -95,7 +97,13 @@ export function DecorateSheet({
             return (
               <AddCell
                 label="Get more in the shop"
-                onPress={() => router.push("/shop")}
+                // Opens the shop on Decor, in this room's category.
+                onPress={() =>
+                  router.push({
+                    pathname: "/shop",
+                    params: { tab: "decor", cat: room },
+                  })
+                }
               />
             );
           const isPlaced = placedHere.includes(item.id);

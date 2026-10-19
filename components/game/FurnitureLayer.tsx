@@ -3,10 +3,18 @@ import { FURNITURE_BY_ID } from "@/data/furniture";
 import { PlacedItem } from "@/game/types";
 import { colors } from "@/theme/tokens";
 import { clampSpot, Grid, spanOf } from "@/utils/furnitureGrid";
+import { FontAwesome6 } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Image, PanResponder, StyleSheet, View } from "react-native";
+import {
+  Animated,
+  Image,
+  PanResponder,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 
-interface Preview {
+interface Box {
   col: number;
   row: number;
   cw: number;
@@ -16,14 +24,23 @@ interface Preview {
 interface Props {
   grid: Grid;
   items: PlacedItem[];
-  editable: boolean; // decorate mode: items can be dragged
+  editable: boolean; // decorate mode: items can be selected, dragged and removed
   dark?: boolean; // lights off
   onMove: (id: string, col: number, row: number) => void;
+  onRemove: (id: string) => void;
 }
 
 /** Furniture placed on the room grid. Wall pieces draw first, then floor pieces from the back to the front. */
-export function FurnitureLayer({ grid, items, editable, dark, onMove }: Props) {
-  const [preview, setPreview] = useState<Preview | null>(null);
+export function FurnitureLayer({
+  grid,
+  items,
+  editable,
+  dark,
+  onMove,
+  onRemove,
+}: Props) {
+  const [preview, setPreview] = useState<Box | null>(null); // where a piece being dragged would land
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const list = items
     .map((p) => ({ p, def: FURNITURE_BY_ID[p.id] }))
@@ -34,21 +51,37 @@ export function FurnitureLayer({ grid, items, editable, dark, onMove }: Props) {
     })
     .sort((a, b) => Number(b.def.wall) - Number(a.def.wall) || a.base - b.base);
 
+  const sel = editable ? list.find((x) => x.p.id === selectedId) : undefined;
+  const selBox: Box | null = sel
+    ? { col: sel.spot.col, row: sel.spot.row, ...spanOf(sel.def) }
+    : null;
+  // While dragging, the dashed box shows the landing spot; otherwise it frames the selected piece.
+  const box = preview ?? selBox;
+  const showDelete = !!sel && !preview;
+
   return (
     <View
       pointerEvents={editable ? "box-none" : "none"}
       style={[StyleSheet.absoluteFill, dark && { opacity: 0.65 }]}
     >
-      {preview ? (
+      {/* Tap on empty space to deselect. */}
+      {showDelete ? (
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={() => setSelectedId(null)}
+          accessibilityLabel="Deselect"
+        />
+      ) : null}
+      {box ? (
         <View
           pointerEvents="none"
           style={[
-            styles.preview,
+            styles.box,
             {
-              left: preview.col * grid.cell,
-              top: grid.top + preview.row * grid.cell,
-              width: preview.cw * grid.cell,
-              height: preview.ch * grid.cell,
+              left: box.col * grid.cell,
+              top: grid.top + box.row * grid.cell,
+              width: box.cw * grid.cell,
+              height: box.ch * grid.cell,
             },
           ]}
         />
@@ -63,8 +96,29 @@ export function FurnitureLayer({ grid, items, editable, dark, onMove }: Props) {
           editable={editable}
           onMove={onMove}
           onPreview={setPreview}
+          onSelect={(id) => setSelectedId((cur) => (cur === id ? null : id))}
         />
       ))}
+      {showDelete && sel && selBox ? (
+        <Pressable
+          onPress={() => {
+            setSelectedId(null);
+            onRemove(sel.p.id);
+          }}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel={`Remove ${sel.def.name}`}
+          style={[
+            styles.delete,
+            {
+              left: (selBox.col + selBox.cw) * grid.cell - 26,
+              top: grid.top + selBox.row * grid.cell + 2,
+            },
+          ]}
+        >
+          <FontAwesome6 name="xmark" size={12} color={colors.creamWhite} />
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -76,7 +130,8 @@ interface ItemProps {
   spot: { col: number; row: number };
   editable: boolean;
   onMove: (id: string, col: number, row: number) => void;
-  onPreview: (p: Preview | null) => void;
+  onPreview: (b: Box | null) => void;
+  onSelect: (id: string) => void;
 }
 
 function FurnitureItem({
@@ -87,13 +142,23 @@ function FurnitureItem({
   editable,
   onMove,
   onPreview,
+  onSelect,
 }: ItemProps) {
   const { cw, ch } = spanOf(def);
   const pan = useRef(new Animated.ValueXY()).current;
   const [dragging, setDragging] = useState(false);
   // The responder is created once, so it reads the latest props through a ref.
-  const live = useRef({ grid, def, id, spot, editable, onMove, onPreview });
-  live.current = { grid, def, id, spot, editable, onMove, onPreview };
+  const live = useRef({
+    grid,
+    def,
+    id,
+    spot,
+    editable,
+    onMove,
+    onPreview,
+    onSelect,
+  });
+  live.current = { grid, def, id, spot, editable, onMove, onPreview, onSelect };
 
   // After a drop the item re-renders at its new spot: only then clear the drag offset (no flicker).
   useEffect(() => {
@@ -129,9 +194,15 @@ function FurnitureItem({
       },
       onPanResponderRelease: (_, g) => {
         const l = live.current;
-        const t = target(g.dx, g.dy);
         setDragging(false);
         l.onPreview(null);
+        // A tap (barely any movement) selects the piece instead of moving it.
+        if (Math.hypot(g.dx, g.dy) < 6) {
+          pan.setValue({ x: 0, y: 0 });
+          l.onSelect(l.id);
+          return;
+        }
+        const t = target(g.dx, g.dy);
         if (t.col === l.spot.col && t.row === l.spot.row)
           pan.setValue({ x: 0, y: 0 });
         else l.onMove(l.id, t.col, t.row);
@@ -178,12 +249,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  preview: {
+  box: {
     position: "absolute",
     borderRadius: 8,
     borderWidth: 2,
     borderStyle: "dashed",
     borderColor: colors.coral,
     backgroundColor: "rgba(255,184,171,0.25)",
+  },
+  delete: {
+    position: "absolute",
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    zIndex: 200,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.accentRed,
+    borderWidth: 2,
+    borderColor: colors.creamWhite,
   },
 });

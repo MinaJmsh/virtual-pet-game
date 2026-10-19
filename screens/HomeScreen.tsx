@@ -239,11 +239,13 @@ export default function HomeScreen() {
         />
         {freeRoom && grid ? (
           <FurnitureLayer
+            key={room}
             grid={grid}
             items={layout}
             editable={mode === "decorate"}
             dark={asleep && room === "bedroom"}
             onMove={onFurnitureMove}
+            onRemove={(id) => show(game.removeFurniture(id, room).message)}
           />
         ) : null}
         <View style={styles.roomName} pointerEvents="none">
