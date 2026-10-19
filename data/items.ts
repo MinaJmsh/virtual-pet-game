@@ -1,7 +1,9 @@
 import { IconSource } from "@/components/cozy/Illustration";
 import { EquipSlot, ItemCategory, RoomId } from "@/game/types";
+import { BATHROOM_FURNITURE } from "./bathroomFurniture";
 import { BEDROOM_FURNITURE } from "./bedroomFurniture";
 import { KITCHEN_FURNITURE } from "./kitchenFurniture";
+import { PLAYROOM_FURNITURE } from "./playroomFurniture";
 
 export interface ShopItem {
   id: string;
@@ -13,6 +15,27 @@ export interface ShopItem {
   slot?: EquipSlot; // only outfits can be worn
   room?: RoomId; // furniture/decor belongs to one room
 }
+
+/** Turns a room's free-placement furniture list into shop items. */
+const furnitureItems = (
+  list: {
+    id: string;
+    name: string;
+    description: string;
+    icon: IconSource;
+    price: number;
+  }[],
+  room: RoomId,
+): ShopItem[] =>
+  list.map((f) => ({
+    id: f.id,
+    name: f.name,
+    description: f.description,
+    icon: f.icon,
+    category: "furniture",
+    price: f.price,
+    room,
+  }));
 
 export const SHOP_ITEMS: ShopItem[] = [
   // hats
@@ -111,116 +134,11 @@ export const SHOP_ITEMS: ShopItem[] = [
     slot: "neck",
   },
 
-  // kitchen: free-placement furniture
-  ...KITCHEN_FURNITURE.map(
-    (f): ShopItem => ({
-      id: f.id,
-      name: f.name,
-      description: f.description,
-      icon: f.icon,
-      category: "furniture",
-      price: f.price,
-      room: "kitchen",
-    }),
-  ),
-
-  // playroom
-  {
-    id: "sofa",
-    name: "Sofa",
-    description: "A soft sofa, perfect for post-game lounging.",
-    icon: "🛋️",
-    category: "furniture",
-    price: 80,
-    room: "playroom",
-  },
-  {
-    id: "yarn",
-    name: "Yarn Ball",
-    description: "Endless fun to bat around.",
-    icon: "🧶",
-    category: "decor",
-    price: 35,
-    room: "playroom",
-  },
-  {
-    id: "ball",
-    name: "Ball",
-    description: "Bouncy and ready to be chased.",
-    icon: "⚽",
-    category: "decor",
-    price: 25,
-    room: "playroom",
-  },
-  {
-    id: "blocks",
-    name: "Toy Blocks",
-    description: "Colorful blocks for tiny architects.",
-    icon: "🧩",
-    category: "decor",
-    price: 30,
-    room: "playroom",
-  },
-  {
-    id: "drum",
-    name: "Drum",
-    description: "Make some noise. Gently, please.",
-    icon: "🥁",
-    category: "decor",
-    price: 45,
-    room: "playroom",
-  },
-
-  // bathroom
-  {
-    id: "laundry",
-    name: "Laundry Basket",
-    description: "A handy basket for all the fluffy towels.",
-    icon: "🧺",
-    category: "furniture",
-    price: 55,
-    room: "bathroom",
-  },
-  {
-    id: "duck",
-    name: "Rubber Duck",
-    description: "Bath time is better with a duck.",
-    icon: "🦆",
-    category: "decor",
-    price: 30,
-    room: "bathroom",
-  },
-  {
-    id: "soap",
-    name: "Soap",
-    description: "Smells like fresh flowers.",
-    icon: "🧼",
-    category: "decor",
-    price: 20,
-    room: "bathroom",
-  },
-  {
-    id: "toothbrush",
-    name: "Toothbrush",
-    description: "For a sparkling smile.",
-    icon: "🪥",
-    category: "decor",
-    price: 20,
-    room: "bathroom",
-  },
-
-  // bedroom: free-placement furniture
-  ...BEDROOM_FURNITURE.map(
-    (f): ShopItem => ({
-      id: f.id,
-      name: f.name,
-      description: f.description,
-      icon: f.icon,
-      category: "furniture",
-      price: f.price,
-      room: "bedroom",
-    }),
-  ),
+  // furniture: every room uses free placement on a grid
+  ...furnitureItems(KITCHEN_FURNITURE, "kitchen"),
+  ...furnitureItems(PLAYROOM_FURNITURE, "playroom"),
+  ...furnitureItems(BATHROOM_FURNITURE, "bathroom"),
+  ...furnitureItems(BEDROOM_FURNITURE, "bedroom"),
 ];
 
 export const getItem = (id: string | null | undefined) =>
